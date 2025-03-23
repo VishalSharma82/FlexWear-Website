@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>FlexWear</h1>
+        </div>
+        <nav class="main-nav">
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#blog">Fashion Blog</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+            <div class="icons">
+                <a href="#"><i class='bx bx-search'></i></a>
+                <a href="#"><i class='bx bx-user'></i></a>
+                <a href="#"><i class='bx bx-cart'></i></a>
+                <div class="menu-toggle" id="menu-toggle"><i class='bx bx-menu'></i></div>
+            </div>
+        </nav>
+        <div class="mobile-nav" id="mobile-nav">
+            <ul class="mobile-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#blog">Fashion Blog</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <h2>Products</h2>
+    <div class="product-list">
+        <div class="product">
+            <h3>Product 1</h3>
+            <p>Price: $100</p>
+            <button class="add-to-cart-btn" onclick="addToCart('Product 1', 100)">Add to Cart</button>
+        </div>
+        <div class="product">
+            <h3>Product 2</h3>
+            <p>Price: $150</p>
+            <button class="add-to-cart-btn" onclick="addToCart('Product 2', 150)">Add to Cart</button>
+        </div>
+        <div class="product">
+            <h3>Product 3</h3>
+            <p>Price: $200</p>
+            <button class="add-to-cart-btn" onclick="addToCart('Product 3', 200)">Add to Cart</button>
+        </div>
+    </div>
+
+    <h2>Cart</h2>
+    <div class="cart-container">
+        <div id="cart-items"></div>
+        <div class="total">Total Items: <span id="total-items">0</span> | Total Price: $<span id="total-price">0</span></div>
+    </div>
+
+</body>
+</html>

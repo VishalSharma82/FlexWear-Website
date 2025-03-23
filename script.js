@@ -1,3 +1,9 @@
+const menuToggle = document.getElementById('menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+
+    menuToggle.addEventListener('click', () => {
+        mobileNav.style.display = mobileNav.style.display === 'block' ? 'none' : 'block';
+    });
 const header = document.querySelector("header");
 
 window.addEventListener("scroll", function () {
@@ -60,3 +66,31 @@ document.getElementById("user-form").addEventListener("submit", async (e) => {
       console.error(error);
     }
   });
+  let cart = [];
+
+        function addToCart(productName, price) {
+            cart.push({ name: productName, price: price });
+            renderCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            const totalItems = document.getElementById('total-items');
+            const totalPrice = document.getElementById('total-price');
+
+            cartItems.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                cartItems.innerHTML += `<div class="cart-item">${item.name} - $${item.price} <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button></div>`;
+            });
+
+            totalItems.textContent = cart.length;
+            totalPrice.textContent = total;
+        }
