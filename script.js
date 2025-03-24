@@ -1,96 +1,150 @@
-const menuToggle = document.getElementById('menu-toggle');
-    const mobileNav = document.getElementById('mobile-nav');
+document.addEventListener("DOMContentLoaded", function () {
+  const menuToggle = document.getElementById("menu-toggle");
+  const mobileNav = document.getElementById("mobile-nav");
 
-    menuToggle.addEventListener('click', () => {
-        mobileNav.style.display = mobileNav.style.display === 'block' ? 'none' : 'block';
+  menuToggle.addEventListener("click", function () {
+    mobileNav.style.display =
+      mobileNav.style.display === "block" ? "none" : "block";
+  });
+
+  // Close mobile menu when a link is clicked
+  document.querySelectorAll(".mobile-links a").forEach((link) => {
+    link.addEventListener("click", () => {
+      mobileNav.style.display = "none";
     });
-const header = document.querySelector("header");
-
-window.addEventListener("scroll", function () {
-    header.classList.toggle("sticky", this.window.scrollY > 0);
-})
-
-let menu = document.querySelector('#menu-icon');
-let navmenu = document.querySelector('.navmenu');
-
-menu.onclick = () => {
-    menu.classList.toggle('bx-x');
-    navmenu.classList.toggle('open');
-}
-// JavaScript for the index.html file
-const menuIcon = document.getElementById('menu-icon');
-const navMenu = document.getElementById('nav-menu');
-const searchIcon = document.getElementById('search-icon');
-
-// Toggle the navigation menu
-menuIcon.addEventListener('click', () => {
-  navMenu.classList.toggle('active');
-});
-
-// Search functionality
-searchIcon.addEventListener('click', () => {
-  const searchBar = document.createElement('div');
-  searchBar.innerHTML = `
-    <div id="search-bar" style="position: fixed; top: 20px; right: 20px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 8px; z-index: 1000;">
-      <input type="text" placeholder="Search..." style="padding: 5px; width: 200px;" />
-      <button id="close-search" style="margin-left: 10px; padding: 5px;">Close</button>
-    </div>
-  `;
-  document.body.appendChild(searchBar);
-
-  document.getElementById('close-search').addEventListener('click', () => {
-    searchBar.remove();
   });
 });
-document.getElementById("user-form").addEventListener("submit", async (e) => {
-    e.preventDefault(); // Prevent form submission from refreshing the page
 
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
+// ✅ Load Cart on Page Load
+updateCartUI();
 
-    try {
-      const response = await fetch("http://localhost:3000/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+// ✅ Add to Cart Functionality
+const addToCartButtons = document.querySelectorAll(".add-to-cart");
 
-      if (response.ok) {
-        alert("Message sent successfully!");
-        e.target.reset(); // Reset form fields
-      } else {
-        alert("Failed to send message. Please try again.");
-      }
-    } catch (error) {
-      alert("An error occurred. Please try again.");
-      console.error(error);
+addToCartButtons.forEach((button) => {
+  button.addEventListener("click", function () {
+    const productCard = this.closest(".product-card");
+    if (!productCard) {
+      console.error("🚨 No '.product-card' found!");
+      return;
     }
+
+    const productName = productCard.querySelector("h3")?.innerText;
+    const productPrice = productCard.querySelector(".product-price")?.innerText;
+    const productImage = productCard.querySelector("img")?.src;
+
+    if (!productName || !productPrice || !productImage) {
+      console.error("🚨 Missing product details!");
+      return;
+    }
+
+    console.log(`✅ Adding to Cart: ${productName}, ${productPrice}`);
+    addToCart(productName, productPrice, productImage);
   });
-  let cart = [];
+});
 
-        function addToCart(productName, price) {
-            cart.push({ name: productName, price: price });
-            renderCart();
-        }
+// ✅ Remove from Cart Event
+document.addEventListener("click", function (event) {
+  if (event.target.classList.contains("remove-from-cart")) {
+    let productName = event.target.getAttribute("data-name");
+    removeFromCart(productName);
+  }
+});
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            renderCart();
-        }
+// ✅ Clear Cart Button
+const clearCartButton = document.querySelector("button[onclick='clearCart()']");
+if (clearCartButton) {
+  clearCartButton.addEventListener("click", clearCart);
+}
 
-        function renderCart() {
-            const cartItems = document.getElementById('cart-items');
-            const totalItems = document.getElementById('total-items');
-            const totalPrice = document.getElementById('total-price');
+// ✅ Function to Add Item to Cart
+function addToCart(name, price, image) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-            cartItems.innerHTML = '';
-            let total = 0;
+  let existingProduct = cart.find((item) => item.name === name);
+  if (existingProduct) {
+    existingProduct.quantity += 1;
+  } else {
+    cart.push({ name, price, image, quantity: 1 });
+  }
 
-            cart.forEach((item, index) => {
-                total += item.price;
-                cartItems.innerHTML += `<div class="cart-item">${item.name} - $${item.price} <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button></div>`;
-            });
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert(`✅ ${name} added to cart!`);
+  updateCartUI();
+}
 
-            totalItems.textContent = cart.length;
-            totalPrice.textContent = total;
-        }
+// ✅ Function to Remove Item from Cart
+function removeFromCart(name) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart = cart.filter((item) => item.name !== name);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartUI();
+}
+
+// ✅ Function to Clear Cart
+function clearCart() {
+  localStorage.removeItem("cart");
+  updateCartUI();
+}
+
+// ✅ Function to Update Cart UI
+function updateCartUI() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let cartContainer = document.getElementById("cart-items");
+  let totalItems = document.getElementById("total-items");
+  let totalPrice = document.getElementById("total-price");
+
+  if (!cartContainer || !totalItems || !totalPrice) {
+    console.error("🚨 Cart UI elements not found!");
+    return;
+  }
+
+  cartContainer.innerHTML = ""; // Clear previous items
+
+  if (cart.length === 0) {
+    cartContainer.innerHTML =
+      "<p class='text-gray-500 text-center'>🛒 Your cart is empty!</p>";
+    totalItems.innerText = "0";
+    totalPrice.innerText = "0.00";
+    return;
+  }
+
+  let totalQuantity = 0;
+  let totalCost = 0;
+
+  cart.forEach((item) => {
+    totalQuantity += item.quantity;
+    totalCost += parseFloat(item.price.replace("$", "")) * item.quantity;
+
+    let cartItem = document.createElement("div");
+    cartItem.classList.add(
+      "cart-card",
+      "bg-white",
+      "shadow-md",
+      "rounded-lg",
+      "p-4",
+      "flex",
+      "items-center",
+      "gap-4",
+      "border"
+    );
+
+    cartItem.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-lg shadow">
+          <div class="flex-1">
+              <p class="font-bold text-lg">${item.name}</p>
+              <p class="text-gray-600">${item.price}</p>
+              <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
+          </div>
+
+          <button class="remove-from-cart bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition" data-name="${item.name}">
+              ❌ Remove
+          </button>
+      `;
+
+    cartContainer.appendChild(cartItem);
+  });
+
+  totalItems.innerText = totalQuantity;
+  totalPrice.innerText = totalCost.toFixed(2);
+}
